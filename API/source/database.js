@@ -134,10 +134,31 @@ class Database {
      * @returns {boolean} that indicates if the update was succesful (TRUE) or unsuccesful (FALSE)
      */
     async updateUser(userID, param, value) {
-        let result = await pg("users")
-            .where("USER_ID", userID)
-            .update(param, value);
-        return result == 0 ? false : true;
+        let validation;
+        switch (param) {
+            case "username":
+                validation = VALIDATION.checkUsername(value);
+                break;
+            case "password":
+                validation = VALIDATION.checkPassword(value);
+                break;
+            case "email":
+                validation = VALIDATION.checkEmail(value);
+                break;
+            case "spotifyID":
+                validation = true;
+                break;
+            default:
+                break;
+        }
+        if (validation) {
+            let result = await pg("users")
+                .where("USER_ID", userID)
+                .update(param, value);
+            return result == 0 ? false : true;
+        } else {
+            return false;
+        }
     }
 }
 

@@ -3,58 +3,112 @@ const SUPERTEST = require("supertest");
 const REQUEST = SUPERTEST(APP);
 const ROUTE = "/users";
 const USER = {
-    username: "user",
-    password: "user",
+    username: "Gauthier",
+    password: "@userPass0",
     email: "user@user.be",
-    spotifyID: 1,
+    spotifyID: "ABCDEFGHIKJLMO",
 };
+const ERROR_INSUFFICIENT_CREDENTIALS = "All credentials must be given!";
+const ERROR_INVALID_CREDENTIALS = "The given credentials are invalid!";
 
-test("Helper function to test the GET endpoint", async () => {
+test("POST /users", async () => {
+    await REQUEST.get("/");
+    let response = await REQUEST.post(ROUTE);
+    expect(response.body.message).toBe(ERROR_INSUFFICIENT_CREDENTIALS);
+
+    response = await REQUEST.post(ROUTE).send({
+        user: USER,
+    });
+    expect(response.status).toBe(200);
+});
+
+test("GET /users", async () => {
     let response = await REQUEST.get(ROUTE);
-    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(ERROR_INSUFFICIENT_CREDENTIALS);
+
     response = await REQUEST.get(ROUTE).send({
         param: "username",
         value: USER.username,
     });
     expect(response.status).toBe(200);
-});
 
-test("Helper function to test the POST endpoint", async () => {
-    let response = await REQUEST.post(ROUTE);
-    expect(response.status).toBe(400);
-    response = await REQUEST.post(ROUTE).send({
-        user: {
-            username: USER.username,
-            password: USER.password,
-            email: USER.email,
-            spotifyID: USER.spotifyID,
-        },
+    response = await REQUEST.get(ROUTE).send({
+        param: "username",
+        value: "",
     });
-    expect(response.status).toBe(200);
+    expect(response.body.message).toBe(ERROR_INVALID_CREDENTIALS);
 });
 
-test("Helper function to test the PATCH endpoint", async () => {
+test("PATCH /users", async () => {
     let response = await REQUEST.patch(ROUTE);
-    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(ERROR_INSUFFICIENT_CREDENTIALS);
+
     response = await REQUEST.patch(ROUTE).send({
         param: "email",
-        value: USER.username,
+        value: "root@root.be",
         USER_ID: 1,
     });
     expect(response.status).toBe(200);
 });
 
-test("Helper function to test the DELETE endpoint", async () => {
+test("DELETE /users", async () => {
     let response = await REQUEST.delete(ROUTE);
     expect(response.status).toBe(400);
+
     response = await REQUEST.delete(ROUTE).send({
-        user: {
-            username: USER.username,
-            password: USER.password,
-            email: USER.email,
-            spotifyID: USER.spotifyID,
-        },
+        user: { ...USER, email: "root@root.be" },
         USER_ID: 1,
     });
     expect(response.status).toBe(200);
+});
+
+test("End to end test", async () => {
+    let response = await REQUEST.patch(ROUTE).send({
+        param: "username",
+        value: "Gauthier",
+        USER_ID: 1,
+    });
+    expect(response.body.message).toBe(ERROR_INVALID_CREDENTIALS);
+
+    response = await REQUEST.post(ROUTE).send({
+        user: { ...USER, username: "JohnDoe" },
+    });
+    expect(response.status).toBe(200);
+
+    response = await REQUEST.get(ROUTE).send({
+        param: "username",
+        value: "JohnDoe",
+    });
+    expect(response.body.result).toHaveLength(1);
+
+    response = await REQUEST.patch(ROUTE).send({
+        param: "username",
+        value: USER.username,
+        USER_ID: 2,
+    });
+    expect(response.status).toBe(200);
+
+    response = await REQUEST.get(ROUTE).send({
+        param: "username",
+        value: "Gauthier",
+    });
+    expect(response.status).toBe(200);
+
+    response = await REQUEST.delete(ROUTE).send({
+        user: USER,
+        USER_ID: 2,
+    });
+    expect(response.status).toBe(200);
+
+    response = await REQUEST.get(ROUTE).send({
+        param: "username",
+        value: USER.username,
+    });
+    expect(response.body.result).toBe("No user found!");
+
+    response = await REQUEST.delete(ROUTE).send({
+        user: USER,
+        USER_ID: 2,
+    });
+    expect(response.body.message).toBe(ERROR_INVALID_CREDENTIALS);
 });
