@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:latest
 
 WORKDIR /USR/werkstuk
 
@@ -8,6 +8,6 @@ RUN npm install
 
 EXPOSE 3000
 
-COPY . .
+COPY ./ ./
 
 CMD npm test

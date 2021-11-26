@@ -8,7 +8,7 @@ const DATABASE = new Database();
 const PORT = process.env.PORT | 3000;
 const SERVER = express();
 const USER_ROUTER = express.Router();
-
+DATABASE.createUserTable();
 //FUNCTIONS
 SERVER.use(bodyParser.json());
 SERVER.use(
@@ -128,7 +128,6 @@ USER_ROUTER.route("/")
 SERVER.use("/users", USER_ROUTER);
 
 SERVER.get("/", async (req, res) => {
-    await DATABASE.createUserTable();
     res.send("hello");
 });
 

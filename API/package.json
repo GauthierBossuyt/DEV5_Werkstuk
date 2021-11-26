@@ -4,8 +4,10 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "jest --watchAll",
-        "start": "nodemon --legacy-watch source/index.js"
+        "prod": "node source/index.js",
+        "test": "jest --watchAll --detectOpenHandles",
+        "start": "nodemon --legacy-watch source/index.js",
+        "test-ci": "jest --ci --detectOpenHandles --forceExit"
     },
     "author": "",
     "license": "ISC",

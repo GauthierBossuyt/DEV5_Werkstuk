@@ -36,7 +36,7 @@ test("GET /users", async () => {
         param: "username",
         value: "",
     });
-    expect(response.body.message).toBe(ERROR_INVALID_CREDENTIALS);
+    expect(response.body.message).toBe(ERROR_INSUFFICIENT_CREDENTIALS);
 });
 
 test("PATCH /users", async () => {

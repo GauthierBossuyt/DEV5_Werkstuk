@@ -17,7 +17,8 @@ services:
       - "80:${PORT}"
 
     depends_on:
-      - pg
+      pg:
+        condition: service_healthy
 
   pg:
     image: postgres:latest
@@ -25,6 +26,12 @@ services:
       - POSTGRES_USER
       - POSTGRES_PASSWORD
       - POSTGRES_DB
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
     ports:
       - 5432:5432
