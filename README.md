@@ -1,4 +1,4 @@
-<center><h1> The Resonating API </h1></center>
+## The Resonating API 💾
 
 
 ## Description :memo:
