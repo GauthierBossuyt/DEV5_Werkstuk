@@ -2,7 +2,9 @@ const { default: knex } = require("knex");
 const { Validation } = require("./validation");
 const pg = require("knex")({
     client: "pg",
-    connection: process.env.POSTGRES_CONNECTION,
+    connection: process.env.POSTGRES_CONNECTION
+        ? process.env.POSTGRES_CONNECTION
+        : "pg://user:user@localhost:5432/werkstuk",
     searchPath: ["knex", "public"],
 });
 const VALIDATION = new Validation();
@@ -18,6 +20,16 @@ class Database {
     async doesTableExist(name) {
         let tableExists = await pg.schema.hasTable(name);
         return tableExists;
+    }
+
+    async truncateTable(name) {
+        let tableExists = await this.doesTableExist(name);
+        if (tableExists) {
+            await pg(name).truncate();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -49,6 +61,7 @@ class Database {
             });
             return true;
         } else {
+            console.log("exists");
             return false;
         }
     }
@@ -162,4 +175,6 @@ class Database {
     }
 }
 
-module.exports = { Database };
+const database = new Database();
+
+module.exports = { database };

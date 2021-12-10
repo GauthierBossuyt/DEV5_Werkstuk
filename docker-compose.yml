@@ -1,37 +1,35 @@
 version: "3.9"
 
 services:
-  api:
-    build: ./API
-    volumes:
-      - ./API/source:/USR/werkstuk/source
+    api:
+        build: ./API
+        volumes:
+            - ./API/source:/USR/werkstuk/source
+        environment:
+            CHOKIDAR_USEPOLLING: "true"
+            PORT: ${PORT}
+            POSTGRES_CONNECTION: ${POSTGRES_CONNECTION}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        ports:
+            - "${PORT}:${PORT}"
+        depends_on:
+            pg:
+                condition: service_healthy
 
-    environment:
-      - PORT
-      - POSTGRES_CONNECTION
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-
-    ports:
-      - "80:${PORT}"
-
-    depends_on:
-      pg:
-        condition: service_healthy
-
-  pg:
-    image: postgres:latest
-    environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-    ports:
-      - 5432:5432
+    pg:
+        image: postgres:latest
+        environment:
+            - POSTGRES_USER
+            - POSTGRES_PASSWORD
+            - POSTGRES_DB
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U user -d werkstuk"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+        ports:
+            - 5432:5432
+        volumes:
+            - ./_volumes:/var/lib/postgresql/data
