@@ -179,9 +179,16 @@ class Database {
         }
     }
 
+    /**
+     * Returns all data within a certain table.
+     * @param {string} name of table.
+     * @returns {array} of all data within the given table.
+     */
     async getAllDataFromTable(name) {
-        return await pg("users").select("*");
+        return await pg(name).select("*");
     }
+
+    
 }
 
 const database = new Database();
