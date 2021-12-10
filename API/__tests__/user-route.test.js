@@ -14,8 +14,10 @@ const ERROR_INVALID_CREDENTIALS = "The given credentials are invalid!";
 
 beforeAll(async () => {
     let test = await database.doesTableExist("users");
-    if (!test) {
-        await database.createUserTable();
+    if (test) {
+        await database.truncateTable("users");
+    } else {
+        await database.createUserTable("users");
     }
 });
 
@@ -121,5 +123,5 @@ test("End to end test", async () => {
 });
 
 afterAll(async () => {
-    // await database.deleteTable("users");
+    await database.truncateTable("users");
 });
