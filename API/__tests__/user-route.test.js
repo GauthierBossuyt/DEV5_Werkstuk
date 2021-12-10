@@ -49,6 +49,12 @@ test("GET /users", async () => {
     expect(response.body.message).toBe(ERROR_INSUFFICIENT_CREDENTIALS);
 });
 
+test("GET /", async () => {
+    let response = await REQUEST.get("/");
+    console.log(response);
+    expect(response.body.length).toBe(1);
+});
+
 test("PATCH /users", async () => {
     let response = await REQUEST.patch(ROUTE);
     expect(response.body.message).toBe(ERROR_INSUFFICIENT_CREDENTIALS);
@@ -69,57 +75,6 @@ test("DELETE /users", async () => {
         USER_ID: 1,
     });
     expect(response.status).toBe(200);
-});
-
-test("End to end test", async () => {
-    let response = await REQUEST.patch(ROUTE).send({
-        param: "username",
-        value: "Gauthier",
-        USER_ID: 1,
-    });
-    expect(response.body.message).toBe(ERROR_INVALID_CREDENTIALS);
-
-    response = await REQUEST.post(ROUTE).send({
-        user: { ...USER, username: "JohnDoe" },
-    });
-    expect(response.status).toBe(200);
-
-    response = await REQUEST.get(ROUTE).send({
-        param: "username",
-        value: "JohnDoe",
-    });
-    expect(response.body.result).toHaveLength(1);
-
-    response = await REQUEST.patch(ROUTE).send({
-        param: "username",
-        value: USER.username,
-        USER_ID: 2,
-    });
-    expect(response.status).toBe(200);
-
-    response = await REQUEST.get(ROUTE).send({
-        param: "username",
-        value: "Gauthier",
-    });
-    expect(response.status).toBe(200);
-
-    response = await REQUEST.delete(ROUTE).send({
-        user: USER,
-        USER_ID: 2,
-    });
-    expect(response.status).toBe(200);
-
-    response = await REQUEST.get(ROUTE).send({
-        param: "username",
-        value: USER.username,
-    });
-    expect(response.body.result).toBe("No user found!");
-
-    response = await REQUEST.delete(ROUTE).send({
-        user: USER,
-        USER_ID: 2,
-    });
-    expect(response.body.message).toBe(ERROR_INVALID_CREDENTIALS);
 });
 
 afterAll(async () => {

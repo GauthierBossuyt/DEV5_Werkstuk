@@ -22,6 +22,12 @@ class Database {
         return tableExists;
     }
 
+    /**
+     * Empties table from all content within.
+     * @param {string} name of the table.
+     * @returns {boolean} that indicates if the table is emptied (TRUE) or not (FALSE).
+     */
+
     async truncateTable(name) {
         let tableExists = await this.doesTableExist(name);
         if (tableExists) {
@@ -61,7 +67,6 @@ class Database {
             });
             return true;
         } else {
-            console.log("exists");
             return false;
         }
     }
@@ -172,6 +177,10 @@ class Database {
         } else {
             return false;
         }
+    }
+
+    async getAllDataFromTable(name) {
+        return await pg("users").select("*");
     }
 }
 

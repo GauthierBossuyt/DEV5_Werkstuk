@@ -3,8 +3,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { database } = require("./database.js");
 
-// database.createUserTable();
-
 //GLOBAL VARIABLES
 const SERVER = express();
 const USER_ROUTER = express.Router();
@@ -128,7 +126,8 @@ USER_ROUTER.route("/")
 SERVER.use("/users", USER_ROUTER);
 
 SERVER.get("/", async (req, res) => {
-    res.send("hello");
+    let data = await database.getAllDataFromTable("users");
+    res.json(data);
 });
 
 module.exports = SERVER;
