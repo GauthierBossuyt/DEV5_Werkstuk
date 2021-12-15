@@ -6,6 +6,7 @@ const { database } = require("./database.js");
 //GLOBAL VARIABLES
 const SERVER = express();
 const USER_ROUTER = express.Router();
+const SONG_ROUTER = express.Router();
 
 //FUNCTIONS
 SERVER.use(bodyParser.json());
@@ -123,7 +124,26 @@ USER_ROUTER.route("/")
         }
     });
 
+SONG_ROUTER.route("/")
+    /**
+     * POST /songs
+     * @param {Object} user : an object containing a title and an artist
+     * @returns {status}
+     */
+    .post(async (req, res) => {
+        if (req.body.song) {
+            if (await database.addSong(req.body.song)) {
+                res.status(200).send();
+            } else {
+                res.status(400).send();
+            }
+        } else {
+            res.status(400).send({ message: "All credentials must be given!" });
+        }
+    });
+
 SERVER.use("/users", USER_ROUTER);
+SERVER.use("/songs", SONG_ROUTER);
 
 SERVER.get("/", async (req, res) => {
     let data = await database.getAllDataFromTable("users");

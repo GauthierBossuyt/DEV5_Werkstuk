@@ -7,11 +7,11 @@ const SONG = { title: "Lost My Mind", artist: "Alison Wonderland" };
 const ERROR_INSUFFICIENT_CREDENTIALS = "All credentials must be given!";
 
 beforeAll(async () => {
-    let test = await database.doesTableExist("users");
+    let test = await database.doesTableExist("songs");
     if (test) {
-        await database.truncateTable("users");
+        await database.truncateTable("songs");
     } else {
-        await database.createUserTable("users");
+        await database.createUserTable("songs");
     }
 });
 
@@ -35,7 +35,7 @@ test("GET /songs", async () => {
     let response = await REQUEST.get(ROUTE);
     expect(response.body.message).toBe(ERROR_INSUFFICIENT_CREDENTIALS);
 
-    let response = await REQUEST.get(ROUTE).send({
+    response = await REQUEST.get(ROUTE).send({
         param: "title",
         value: SONG.title,
     });
@@ -111,5 +111,5 @@ test("DELETE /songs", async () => {
 });
 
 afterAll(async () => {
-    await database.truncateTable("users");
+    await database.truncateTable("songs");
 });
