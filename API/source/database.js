@@ -241,6 +241,7 @@ class Database {
     /**
      * adds a song to the song database.
      * @param {Object} song, which contains a title and an artist (no validation)
+     * @returns {boolean} that indicates if adding the song was succesful
      */
     async addSong(song) {
         if (song.title && song.artist) {
@@ -261,14 +262,27 @@ class Database {
     /**
      * deletes a song from the database.
      * @param {Object} song containing a title and an artist
-     * @param {*} id of the song
+     * @param {integer} id of the song
+     * @return {boolean} that indicates if the deletion was succesful
      */
-    async deleteSong(song, id) {}
+    async deleteSong(song, id) {
+        let result = await pg("songs")
+            .where("title", song.title)
+            .andWhere("artist", song.artist)
+            .andWhere("SONG_ID", id)
+            .del();
+        if (result > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Searches a song from the database matching the value.
      * @param {string} param key that of the object, which will be used to search with.
      * @param {string} value that the object should contain
+     * @returns {array} of objects containing all the results
      */
     async getSong(param, value) {}
 
@@ -277,6 +291,7 @@ class Database {
      * @param {string} param key of the object.
      * @param {string} value of the change.
      * @param {intiger} id is the id of the targeted object.
+     * @returns {boolean} indicating whether the updating was succesful or not.
      */
     async updateSong(id, param, value) {}
 
