@@ -223,10 +223,40 @@ class Database {
     }
 
     /**
+     * Checks if a song is already in the database
+     * @param {Object} song containing a title and an artist
+     * @returns {boolean} True if the song already exists and false if it doesn't.
+     */
+    async checkIfSongExists(song) {
+        let result = await pg("songs")
+            .where("title", song.title)
+            .andWhere("artist", song.artist);
+        if (result.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * adds a song to the song database.
      * @param {Object} song, which contains a title and an artist (no validation)
      */
-    async addSong(song) {}
+    async addSong(song) {
+        if (song.title && song.artist) {
+            if (!(await this.checkIfSongExists(song))) {
+                await pg("songs").insert({
+                    title: song.title,
+                    artist: song.artist,
+                });
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
     /**
      * deletes a song from the database.
