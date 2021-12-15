@@ -51,7 +51,7 @@ test("GET /users", async () => {
 
 test("GET /", async () => {
     let response = await REQUEST.get("/");
-    expect(response.body.length).toBe(1);
+    expect(response.status).toBe(200);
 });
 
 test("PATCH /users", async () => {
