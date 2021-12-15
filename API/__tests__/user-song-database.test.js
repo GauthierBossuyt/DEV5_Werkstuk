@@ -52,12 +52,12 @@ test("Test connecting a song to a user in the pivot table", async () => {
 });
 
 test("Test getting all songs connected to a user", async () => {
-    expect(await DATABASE.getAllSongsFromUSer(1)).toHaveLength(3);
-    expect(await DATABASE.getAllSongsFromUSer(4)).toBeFalsy();
+    expect(await DATABASE.getAllSongsFromUser(1)).toHaveLength(3);
+    expect(await DATABASE.getAllSongsFromUser(4)).toBeFalsy();
 });
 
 test("Test getting all users connected to a song", async () => {
-    expect(await DATABASE.getAllUsersFromSong(1)).toHaveLength(3);
+    expect(await DATABASE.getAllUsersFromSong(1)).toHaveLength(2);
     expect(await DATABASE.getAllUsersFromSong(4)).toBeFalsy();
 });
 

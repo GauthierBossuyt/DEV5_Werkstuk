@@ -379,6 +379,39 @@ class Database {
         }
         return false;
     }
+
+    /**
+     * Returns all songs connected to a particular user
+     * @param {integer} USER_ID from the targeted user
+     * @return {array} of all songs connected to the given user.
+     */
+    async getAllSongsFromUser(USER_ID) {
+        let result = await pg("user_song")
+            .where("USER_ID", USER_ID)
+            .select("SONG_ID");
+        let query = [];
+        result.forEach((element) => {
+            query.push(element.SONG_ID);
+        });
+        let songs = await pg("songs").whereIn("SONG_ID", query);
+        return result.length === 0 ? false : songs;
+    }
+    /**
+     * Returns all users connected to a particular song
+     * @param {integer} SONG_ID from the targeted song
+     * @return {array} of all users connected to the given song.
+     */
+    async getAllUsersFromSong(SONG_ID) {
+        let result = await pg("user_song")
+            .where("SONG_ID", SONG_ID)
+            .select("USER_ID");
+        let query = [];
+        result.forEach((element) => {
+            query.push(element.USER_ID);
+        });
+        let users = await pg("users").whereIn("USER_ID", query);
+        return result.length === 0 ? false : users;
+    }
 }
 
 const database = new Database();
