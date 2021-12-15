@@ -222,6 +222,11 @@ class Database {
         }
     }
 
+    async getSongById(id) {
+        let resp = pg("songs").where("SONG_ID", id);
+        return resp;
+    }
+
     /**
      * Checks if a song is already in the database
      * @param {Object} song containing a title and an artist
@@ -284,7 +289,10 @@ class Database {
      * @param {string} value that the object should contain
      * @returns {array} of objects containing all the results
      */
-    async getSong(param, value) {}
+    async getSong(param, value) {
+        let result = await pg("songs").where(param, value);
+        return result.length === 0 ? "Song not found!" : result;
+    }
 
     /**
      * Updates a song from the database matching the value and parameter.
@@ -293,7 +301,23 @@ class Database {
      * @param {intiger} id is the id of the targeted object.
      * @returns {boolean} indicating whether the updating was succesful or not.
      */
-    async updateSong(id, param, value) {}
+    async updateSong(id, param, value) {
+        let song = await this.getSongById(id);
+        if (song[0]) {
+            song[0][param] = value;
+            let doesSongAlreadyExist = await this.checkIfSongExists(song[0]);
+            if (doesSongAlreadyExist) {
+                return false;
+            } else {
+                let resp = await pg("songs")
+                    .where("SONG_ID", id)
+                    .update(param, value);
+                return resp === 0 ? false : true;
+            }
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Returns all data within a certain table.

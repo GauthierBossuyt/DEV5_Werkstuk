@@ -43,11 +43,12 @@ test("Test getting a song from the songs database", async () => {
 });
 
 test("Test updating a song from the songs database", async () => {
-    expect(await DATABASE.updateSong(2, "title", "Coming Over")).toBeTruthy();
+    expect(await DATABASE.updateSong(3, "title", "Coming Over")).toBeTruthy();
     expect(
         await DATABASE.updateSong(1, "artist", "Dillon Francis")
     ).toBeTruthy();
-    expect(await DATABASE.updateSong(2, "title", "Coming Over")).toBeFalsy();
+    expect(await DATABASE.updateSong(1, "title", "Coming Over")).toBeFalsy();
+    expect(await DATABASE.updateSong(20, "title", "Baby Shark"));
 });
 
 afterAll(async () => {
