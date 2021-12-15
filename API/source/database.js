@@ -337,6 +337,12 @@ class Database {
         return await pg(name).select("*");
     }
 
+    /**
+     * Checks if a connection is already made between an user and a song
+     * @param {integer} USER_ID is the id of the targeted user
+     * @param {integer} SONG_ID is the id of the targeted song
+     * @returns {boolean} indicating if the connection already exists or not
+     */
     async checkIfConnectionExists(USER_ID, SONG_ID) {
         let result = await pg("user_song")
             .where("USER_ID", USER_ID)
@@ -348,6 +354,12 @@ class Database {
         }
     }
 
+    /**
+     * Adds a song and user connection to the user_song pivot table
+     * @param {integer} USER_ID The id of the targeted user
+     * @param {integer} SONG_ID the id of the targeted song
+     * @returns {boolean} indicating if the connection is succesfully created within the pivot table
+     */
     async addSongToUser(USER_ID, SONG_ID) {
         if (USER_ID && SONG_ID) {
             let song = await this.getSongById(SONG_ID);
