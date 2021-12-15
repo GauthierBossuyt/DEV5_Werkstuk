@@ -51,7 +51,6 @@ test("GET /users", async () => {
 
 test("GET /", async () => {
     let response = await REQUEST.get("/");
-    console.log(response);
     expect(response.body.length).toBe(1);
 });
 

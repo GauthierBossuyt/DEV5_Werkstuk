@@ -6,7 +6,7 @@ const SERVER = require("./server.js");
 const { database } = require("./database.js");
 
 async function initialise() {
-    await database.createUserTable();
+    await database.initializeTables();
 }
 initialise();
 //GLOBAL VARIABLES

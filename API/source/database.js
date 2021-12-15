@@ -13,6 +13,15 @@ class Database {
     constructor() {}
 
     /**
+     * Initializes the tables
+     */
+    async initializeTables() {
+        await this.createUserTable();
+        await this.createSongsTable();
+        await this.createUserSongTable();
+    }
+
+    /**
      * Checks if a table exists in the database.
      * @param {string} name of the table.
      * @return {boolean} that indicates if the table exists (TRUE) or doesn't (FALSE).
@@ -59,11 +68,45 @@ class Database {
     async createUserTable() {
         if (!(await this.doesTableExist("users"))) {
             await pg.schema.createTable("users", (table) => {
-                table.increments("USER_ID");
+                table.increments("USER_ID").primary();
                 table.string("username");
                 table.string("password");
                 table.string("email");
                 table.string("spotifyID");
+            });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Creates the songs table if there isn't one
+     * @return {boolean} that indicates if the table has been created or not.
+     */
+    async createSongsTable() {
+        if (!(await this.doesTableExist("songs"))) {
+            await pg.schema.createTable("songs", (table) => {
+                table.increments("SONG_ID").primary();
+                table.string("name");
+                table.string("artist");
+            });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Creates pivot table between songs and users if there isn't one.
+     * @returns {boolean} that indicates if the creation of the table was succesful(TRUE).
+     */
+    async createUserSongTable() {
+        if (!(await this.doesTableExist("user_song"))) {
+            await pg.schema.createTable("user_song", (table) => {
+                table.increments("ID").primary();
+                table.foreign("USER_ID").references("USER_ID").inTable("users");
+                table.foreign("SONG_ID").references("SONG_ID").inTable("songs");
             });
             return true;
         } else {
@@ -187,8 +230,6 @@ class Database {
     async getAllDataFromTable(name) {
         return await pg(name).select("*");
     }
-
-    
 }
 
 const database = new Database();
