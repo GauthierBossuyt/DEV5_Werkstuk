@@ -88,7 +88,7 @@ class Database {
         if (!(await this.doesTableExist("songs"))) {
             await pg.schema.createTable("songs", (table) => {
                 table.increments("SONG_ID").primary();
-                table.string("name");
+                table.string("title");
                 table.string("artist");
             });
             return true;
@@ -221,6 +221,34 @@ class Database {
             return false;
         }
     }
+
+    /**
+     * adds a song to the song database.
+     * @param {Object} song, which contains a title and an artist (no validation)
+     */
+    async addSong(song) {}
+
+    /**
+     * deletes a song from the database.
+     * @param {Object} song containing a title and an artist
+     * @param {*} id of the song
+     */
+    async deleteSong(song, id) {}
+
+    /**
+     * Searches a song from the database matching the value.
+     * @param {string} param key that of the object, which will be used to search with.
+     * @param {string} value that the object should contain
+     */
+    async getSong(param, value) {}
+
+    /**
+     * Updates a song from the database matching the value and parameter.
+     * @param {string} param key of the object.
+     * @param {string} value of the change.
+     * @param {intiger} id is the id of the targeted object.
+     */
+    async updateSong(id, param, value) {}
 
     /**
      * Returns all data within a certain table.
