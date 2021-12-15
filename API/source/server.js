@@ -125,6 +125,26 @@ USER_ROUTER.route("/")
     });
 
 SONG_ROUTER.route("/")
+  
+    /**
+     * GET /songs
+     * @param {string} param a string that is used as the parameter for the search
+     * @param {string} value a string that is used as value for the search
+     * @return {json} containing an object with the results in an array.
+     */
+    .get(async (req, res) => {
+        if (req.body.param && req.body.value) {
+            let result = await database.getSong(req.body.param, req.body.value);
+            if (result !== "Song not found!") {
+                res.status(200).send({ response: result });
+            } else {
+                res.status(404).send();
+            }
+        } else {
+            res.status(400).send({ message: "All credentials must be given!" });
+        }
+    })
+
     /**
      * POST /songs
      * @param {Object} user : an object containing a title and an artist
