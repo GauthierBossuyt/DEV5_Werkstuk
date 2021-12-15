@@ -37,7 +37,7 @@ GET /
 
 #
 
-#### _USER ROUTERS_
+#### _USER ROUTES_
 
 ```http
 GET /users
@@ -77,7 +77,7 @@ DELETE /users
 
 #
 
-#### _SONG ROUTERS_
+#### _SONG ROUTES_
 
 ```http
 GET /songs
@@ -117,7 +117,48 @@ DELETE /songs
 
 #
 
-### _Example Objects_
+##### _USER-SONG ROUTES_
+
+```http
+GET /userSongs
+```
+
+| Parameter | Type      | Description                      |
+| :-------- | :-------- | :------------------------------- |
+| `USER_ID` | `integer` | **Required** The id of the user. |
+
+```javascript
+{
+  "array" : songs
+}
+```
+
+```http
+GET /songUsers
+```
+
+| Parameter | Type      | Description                      |
+| :-------- | :-------- | :------------------------------- |
+| `SONG_ID` | `integer` | **Required** The id of the song. |
+
+```javascript
+{
+  "array" : users
+}
+```
+
+```http
+POST /addSong
+```
+
+| Parameter | Type      | Description                      |
+| :-------- | :-------- | :------------------------------- |
+| `USER_ID` | `integer` | **Required** The id of the user. |
+| `SONG_ID` | `integer` | **Required** The id of the song. |
+
+#
+
+### _Objects_
 
 ##### USER OBJECT
 
@@ -157,8 +198,8 @@ DELETE /songs
 -   [x] Song Database
 -   [x] Song Routes
 -   [x] Persistent Data
--   [ ] Connection between users and songs
--   [ ] Routes to get connections
+-   [x] Connection between users and songs
+-   [x] Routes to get connections
 
 #
 
