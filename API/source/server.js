@@ -125,7 +125,33 @@ USER_ROUTER.route("/")
     });
 
 SONG_ROUTER.route("/")
-  
+    
+    
+    /**
+     * PATCH /songs
+     * @param {string} param / parameter for the key that will be changes
+     * @param {string} value is the new value
+     * @param {integer} SONG_ID is the id of the song that should be changed
+     * @return {status}
+     */
+    .patch(async (req, res) => {
+        if (req.body.param && req.body.value && req.body.SONG_ID) {
+            if (
+                await database.updateSong(
+                    req.body.SONG_ID,
+                    req.body.param,
+                    req.body.value
+                )
+            ) {
+                res.status(200).send();
+            } else {
+                res.status(400).send();
+            }
+        } else {
+            res.status(400).send({ message: "All credentials must be given!" });
+        }
+    })
+
     /**
      * GET /songs
      * @param {string} param a string that is used as the parameter for the search
