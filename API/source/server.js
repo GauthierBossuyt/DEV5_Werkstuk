@@ -125,8 +125,25 @@ USER_ROUTER.route("/")
     });
 
 SONG_ROUTER.route("/")
-    
-    
+
+    /**
+     * DELETE /songs
+     * @param {object} song: an object containing a title and an artist
+     * @param {integer} SONG_ID: the id of the targeted song
+     * @return {status}
+     */
+    .delete(async (req, res) => {
+        if ((req.body.song, req.body.SONG_ID)) {
+            if (await database.deleteSong(req.body.song, req.body.SONG_ID)) {
+                res.status(200).send();
+            } else {
+                res.status(400).send();
+            }
+        } else {
+            res.status(400).send({ message: "All credentials must be given!" });
+        }
+    })
+
     /**
      * PATCH /songs
      * @param {string} param / parameter for the key that will be changes
