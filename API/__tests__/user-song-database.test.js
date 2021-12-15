@@ -28,13 +28,37 @@ beforeAll(async () => {
 
 test("Testing initializing adding a user and a song to the DATABASEs", async () => {
     expect(await DATABASE.addSong(SONG)).toBeTruthy();
+    expect(
+        await DATABASE.addSong({ ...SONG, title: "Love U Hate U" })
+    ).toBeTruthy();
+    expect(
+        await DATABASE.addSong({
+            title: "Still not butter",
+            artist: "Dillon Francis",
+        })
+    ).toBeTruthy();
     expect(await DATABASE.addUser(USER)).toBeTruthy();
+    expect(await DATABASE.addUser({ ...USER, username: "Hatsheput" }));
 });
 
 test("Test connecting a song to a user in the pivot table", async () => {
     expect(await DATABASE.addSongToUser(1, 1)).toBeTruthy();
+    expect(await DATABASE.addSongToUser(1, 2)).toBeTruthy();
+    expect(await DATABASE.addSongToUser(1, 3)).toBeTruthy();
+    expect(await DATABASE.addSongToUser(2, 1)).toBeTruthy();
+
     expect(await DATABASE.addSongToUser(1, 1)).toBeFalsy();
     expect(await DATABASE.addSongToUser(4, 5)).toBeFalsy();
+});
+
+test("Test getting all songs connected to a user", async () => {
+    expect(await DATABASE.getAllSongsFromUSer(1)).toHaveLength(3);
+    expect(await DATABASE.getAllSongsFromUSer(4)).toBeFalsy();
+});
+
+test("Test getting all users connected to a song", async () => {
+    expect(await DATABASE.getAllUsersFromSong(1)).toHaveLength(3);
+    expect(await DATABASE.getAllUsersFromSong(4)).toBeFalsy();
 });
 
 afterAll(async () => {
