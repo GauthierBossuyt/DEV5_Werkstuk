@@ -61,6 +61,15 @@ test("Test getting all users connected to a song", async () => {
     expect(await DATABASE.getAllUsersFromSong(4)).toBeFalsy();
 });
 
+test("Test deleting song or user deletes connection in database", async () => {
+    expect(await DATABASE.deleteUser(USER, 1)).toBeTruthy();
+    expect(await DATABASE.getAllSongsFromUser(1)).toBeFalsy();
+    expect(await DATABASE.getAllUsersFromSong(1)).toHaveLength(1);
+    expect(await DATABASE.deleteSong(SONG, 1)).toBeTruthy();
+    expect(await DATABASE.getAllUsersFromSong(1)).toBeFalsy();
+    expect(await DATABASE.getAllSongsFromUser(2)).toBeFalsy();
+});
+
 afterAll(async () => {
     await DATABASE.truncateTable("songs");
     await DATABASE.truncateTable("users");
