@@ -205,6 +205,60 @@ SONG_ROUTER.route("/")
         }
     });
 
+/**
+ * Connects a song to an user,
+ * @param {integer} USER_ID of the targeted user.
+ * @param {integer} SONG_ID of the targeted song.
+ * @returns {status}
+ */
+SERVER.post("/addSong", async (req, res) => {
+    if ((req.body.USER_ID, req.body.SONG_ID)) {
+        if (await database.addSongToUser(req.body.USER_ID, req.body.SONG_ID)) {
+            res.status(200).send();
+        } else {
+            res.status(404).send();
+        }
+    } else {
+        res.status(400).send({ message: "All the credentials must be given!" });
+    }
+});
+
+/**
+ * Gets all the songs connected to a user.
+ * @param {integer} USER_ID of the targeted user.
+ * @returns {array} of all the songs linked with the user.
+ */
+SERVER.get("/userSongs", async (req, res) => {
+    if (req.body.USER_ID) {
+        let resp = await database.getAllSongsFromUser(req.body.USER_ID);
+        if (resp !== false) {
+            res.status(200).send({ songs: resp });
+        } else {
+            res.status(404).send({ songs: [] });
+        }
+    } else {
+        res.status(400).send();
+    }
+});
+
+/**
+ * Gets all the users connected to a song.
+ * @param {integer} SONG_ID of the targeted song.
+ * @returns {array} of all the users linked with the song.
+ */
+SERVER.get("/songUsers", async (req, res) => {
+    if (req.body.SONG_ID) {
+        let resp = await database.getAllUsersFromSong(req.body.SONG_ID);
+        if (resp !== false) {
+            res.status(200).send({ users: resp });
+        } else {
+            res.status(404).send({ users: [] });
+        }
+    } else {
+        res.status(400).send();
+    }
+});
+
 SERVER.use("/users", USER_ROUTER);
 SERVER.use("/songs", SONG_ROUTER);
 

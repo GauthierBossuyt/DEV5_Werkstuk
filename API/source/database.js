@@ -40,7 +40,7 @@ class Database {
     async truncateTable(name) {
         let tableExists = await this.doesTableExist(name);
         if (tableExists) {
-            await pg(name).truncate();
+            await pg.raw(`TRUNCATE TABLE ${name} RESTART IDENTITY CASCADE`);
             return true;
         } else {
             return false;
@@ -105,8 +105,17 @@ class Database {
         if (!(await this.doesTableExist("user_song"))) {
             await pg.schema.createTable("user_song", (table) => {
                 table.increments("ID").primary();
-                table.foreign("USER_ID").references("USER_ID").inTable("users");
-                table.foreign("SONG_ID").references("SONG_ID").inTable("songs");
+                table.integer("USER_ID").notNullable();
+                table.integer("SONG_ID").notNullable();
+
+                table
+                    .foreign("SONG_ID")
+                    .references("songs.SONG_ID")
+                    .onDelete("CASCADE");
+                table
+                    .foreign("USER_ID")
+                    .references("users.USER_ID")
+                    .onDelete("CASCADE");
             });
             return true;
         } else {
@@ -326,6 +335,82 @@ class Database {
      */
     async getAllDataFromTable(name) {
         return await pg(name).select("*");
+    }
+
+    /**
+     * Checks if a connection is already made between an user and a song
+     * @param {integer} USER_ID is the id of the targeted user
+     * @param {integer} SONG_ID is the id of the targeted song
+     * @returns {boolean} indicating if the connection already exists or not
+     */
+    async checkIfConnectionExists(USER_ID, SONG_ID) {
+        let result = await pg("user_song")
+            .where("USER_ID", USER_ID)
+            .andWhere("SONG_ID", SONG_ID);
+        if (result.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Adds a song and user connection to the user_song pivot table
+     * @param {integer} USER_ID The id of the targeted user
+     * @param {integer} SONG_ID the id of the targeted song
+     * @returns {boolean} indicating if the connection is succesfully created within the pivot table
+     */
+    async addSongToUser(USER_ID, SONG_ID) {
+        if (USER_ID && SONG_ID) {
+            let song = await this.getSongById(SONG_ID);
+            let user = await this.getUser("USER_ID", USER_ID);
+            if (user[0].username && song[0].title) {
+                if (!(await this.checkIfConnectionExists(USER_ID, SONG_ID))) {
+                    await pg("user_song")
+                        .insert({
+                            USER_ID: USER_ID,
+                            SONG_ID: SONG_ID,
+                        })
+                        .onConflict()
+                        .ignore();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns all songs connected to a particular user
+     * @param {integer} USER_ID from the targeted user
+     * @return {array} of all songs connected to the given user.
+     */
+    async getAllSongsFromUser(USER_ID) {
+        let result = await pg("user_song")
+            .where("USER_ID", USER_ID)
+            .select("SONG_ID");
+        let query = [];
+        result.forEach((element) => {
+            query.push(element.SONG_ID);
+        });
+        let songs = await pg("songs").whereIn("SONG_ID", query);
+        return result.length === 0 ? false : songs;
+    }
+    /**
+     * Returns all users connected to a particular song
+     * @param {integer} SONG_ID from the targeted song
+     * @return {array} of all users connected to the given song.
+     */
+    async getAllUsersFromSong(SONG_ID) {
+        let result = await pg("user_song")
+            .where("SONG_ID", SONG_ID)
+            .select("USER_ID");
+        let query = [];
+        result.forEach((element) => {
+            query.push(element.USER_ID);
+        });
+        let users = await pg("users").whereIn("USER_ID", query);
+        return result.length === 0 ? false : users;
     }
 }
 
