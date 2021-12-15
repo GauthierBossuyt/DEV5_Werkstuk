@@ -34,11 +34,11 @@ test("Testing initializing adding a user and a song to the DATABASEs", async () 
 test("Test connecting a song to a user in the pivot table", async () => {
     expect(await DATABASE.addSongToUser(1, 1)).toBeTruthy();
     expect(await DATABASE.addSongToUser(1, 1)).toBeFalsy();
-    expect(await DATABASE.addSongToUser(5, 4)).toBeFalsy();
+    expect(await DATABASE.addSongToUser(4, 5)).toBeFalsy();
 });
 
 afterAll(async () => {
-    await DATABASE.truncateTable("user_song");
     await DATABASE.truncateTable("songs");
     await DATABASE.truncateTable("users");
+    await DATABASE.truncateTable("user_song");
 });

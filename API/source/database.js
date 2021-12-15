@@ -40,7 +40,7 @@ class Database {
     async truncateTable(name) {
         let tableExists = await this.doesTableExist(name);
         if (tableExists) {
-            await pg(name).truncate();
+            await pg.raw(`TRUNCATE TABLE ${name} RESTART IDENTITY CASCADE`);
             return true;
         } else {
             return false;
@@ -105,8 +105,17 @@ class Database {
         if (!(await this.doesTableExist("user_song"))) {
             await pg.schema.createTable("user_song", (table) => {
                 table.increments("ID").primary();
-                table.foreign("USER_ID").references("USER_ID").inTable("users");
-                table.foreign("SONG_ID").references("SONG_ID").inTable("songs");
+                table.integer("USER_ID").notNullable();
+                table.integer("SONG_ID").notNullable();
+
+                table
+                    .foreign("SONG_ID")
+                    .references("songs.SONG_ID")
+                    .onDelete("CASCADE");
+                table
+                    .foreign("USER_ID")
+                    .references("users.USER_ID")
+                    .onDelete("CASCADE");
             });
             return true;
         } else {
@@ -326,6 +335,37 @@ class Database {
      */
     async getAllDataFromTable(name) {
         return await pg(name).select("*");
+    }
+
+    async checkIfConnectionExists(USER_ID, SONG_ID) {
+        let result = await pg("user_song")
+            .where("USER_ID", USER_ID)
+            .andWhere("SONG_ID", SONG_ID);
+        if (result.length > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    async addSongToUser(USER_ID, SONG_ID) {
+        if (USER_ID && SONG_ID) {
+            let song = await this.getSongById(SONG_ID);
+            let user = await this.getUser("USER_ID", USER_ID);
+            if (user[0].username && song[0].title) {
+                if (!(await this.checkIfConnectionExists(USER_ID, SONG_ID))) {
+                    await pg("user_song")
+                        .insert({
+                            USER_ID: USER_ID,
+                            SONG_ID: SONG_ID,
+                        })
+                        .onConflict()
+                        .ignore();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
 
