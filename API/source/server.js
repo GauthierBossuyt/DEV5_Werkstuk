@@ -209,8 +209,9 @@ SERVER.use("/users", USER_ROUTER);
 SERVER.use("/songs", SONG_ROUTER);
 
 SERVER.get("/", async (req, res) => {
-    let data = await database.getAllDataFromTable("users");
-    res.json(data);
+    let users = await database.getAllDataFromTable("users");
+    let songs = await database.getAllDataFromTable("songs");
+    res.status(200).send({ users: users, songs: songs });
 });
 
 module.exports = SERVER;
