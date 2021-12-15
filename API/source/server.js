@@ -205,6 +205,44 @@ SONG_ROUTER.route("/")
         }
     });
 
+SERVER.post("/addSong", async (req, res) => {
+    if ((req.body.USER_ID, req.body.SONG_ID)) {
+        if (await database.addSongToUser(req.body.USER_ID, req.body.SONG_ID)) {
+            res.status(200).send();
+        } else {
+            res.status(404).send();
+        }
+    } else {
+        res.status(400).send({ message: "All the credentials must be given!" });
+    }
+});
+
+SERVER.get("/userSongs", async (req, res) => {
+    if (req.body.USER_ID) {
+        let resp = await database.getAllSongsFromUser(req.body.USER_ID);
+        if (resp !== false) {
+            res.status(200).send({ songs: resp });
+        } else {
+            res.status(404).send({ songs: [] });
+        }
+    } else {
+        res.status(400).send();
+    }
+});
+
+SERVER.get("/songUsers", async (req, res) => {
+    if (req.body.SONG_ID) {
+        let resp = await database.getAllUsersFromSong(req.body.SONG_ID);
+        if (resp !== false) {
+            res.status(200).send({ users: resp });
+        } else {
+            res.status(404).send({ users: [] });
+        }
+    } else {
+        res.status(400).send();
+    }
+});
+
 SERVER.use("/users", USER_ROUTER);
 SERVER.use("/songs", SONG_ROUTER);
 

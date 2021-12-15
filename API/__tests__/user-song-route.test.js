@@ -9,8 +9,6 @@ const USER = {
     email: "user@user.be",
     spotifyID: "ABCDEFGHIKJLMO",
 };
-const ERROR_INSUFFICIENT_CREDENTIALS = "All credentials must be given!";
-const ERROR_INVALID_CREDENTIALS = "The given credentials are invalid!";
 
 beforeAll(async () => {
     let doesSongsTableExist = await database.doesTableExist("songs");
